@@ -151,7 +151,7 @@ public class Main extends JFrame {
 					sql = "update materpdv set qtdestoq=0.00 where mfcodigo=" + "'" + lista.getValueAt(i, 0) + "'";
 					cn.executeAtualizacao(sql);
 					// Criar uma lista para armazenar estes codigos
-					codZerar += lista.getValueAt(i, 0) + ",";
+					codZerar +="'"+ lista.getValueAt(i, 0)+"'" + ",";
 					lista.cleanRow(i);
 
 				}
