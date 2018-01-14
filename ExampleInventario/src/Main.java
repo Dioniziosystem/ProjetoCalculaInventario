@@ -39,6 +39,24 @@ import javax.swing.JCheckBox;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+
+/**public void CorrigePrecoCusto() {
+chamaConexao();
+cn.conecta(url, driver, user, password);
+sql = "update materpdv set precocus=(Case When precocus>0.00 And "
+		+ "precocus <= precofab And precocus <=prccumed And precocus <=prccucon And precocus <=pccumeco Then precocus "
+		+ "When precofab > 0.00 and precofab <= precocus And precofab <=prccumed And precofab <=prccucon And precofab <=pccumeco Then precofab "
+		+ "When prccumed > 0.00 and prccumed <= precocus And prccumed<=precofab And prccumed <=prccucon And prccumed <=pccumeco Then prccumed "
+		+ "When prccucon > 0.00 and prccucon <= precocus And prccucon<=precofab And prccucon <=prccumed And prccucon <=pccumeco Then prccucon "
+		+ "when pccumeco > 0.00 then pccumeco "
+		+ "else case when precocus >0.00 then precocus when precofab>0.00 then precofab when prccumed>0.00 then prccumed "
+		+ "when prccucon>0.00 then prccucon else pccumeco End End)";
+cn.executeAtualizacao(sql);
+cn.desconecta();
+
+}**/
+
+
 public class Main extends JFrame {
 
 	private static final long serialVersionUID = 6376445645741759956L;
@@ -186,22 +204,26 @@ public class Main extends JFrame {
 		}
 
 	}
+	
+	 
+    public void CorrigePrecoCusto() {
+        chamaConexao();
+        cn.conecta(url, driver, user, password);
+        sql = "update materpdv set precocus=(Case When precocus>0.00 And "
+                + "precocus <= precofab And precocus <=prccumed And precocus <=prccucon And precocus <=pccumeco And precocus<=precoven Then precocus "
+                + "When precofab > 0.00 and precofab <= precocus And precofab <=prccumed And precofab <=prccucon And precofab <=pccumeco And precofab <=precoven Then precofab "
+                + "When prccumed > 0.00 and prccumed <= precocus And prccumed <=precofab And prccumed <=prccucon And prccumed <=pccumeco And prccumed <=precoven Then prccumed "
+                + "When prccucon > 0.00 and prccucon <= precocus And prccucon <=precofab And prccucon <=prccumed And prccucon <=pccumeco And prccucon <=precoven Then prccucon "
+                + "when pccumeco > 0.00 and pccumeco <= precocus And pccumeco <=precofab And pccumeco <=prccumed And pccumeco <=prccucon And pccumeco <=precoven Then pccumeco "
+                + "when precoven > 0.00 and precoven <= precocus And precoven <=precofab And precoven <=prccumed And precoven <=prccucon And precoven <=pccumeco Then precoven "
+                + "else case when precocus >0.00 then precocus when precofab>0.00 then precofab when prccumed>0.00 then prccumed "
+                + "when prccucon>0.00 then prccucon when pccumeco>0.00 then pccumeco else precoven End End) where PRECOCUS<>0.00 OR PRECOFAB<>0.00 OR PRCCUMED<>0.00 AND "
+                + "PRCCUCON<>0.00 OR PCCUMECO<>0.00";
+        cn.executeAtualizacao(sql);
+        cn.desconecta();
 
-	public void CorrigePrecoCusto() {
-		chamaConexao();
-		cn.conecta(url, driver, user, password);
-		sql = "update materpdv set precocus=(Case When precocus>0.00 And "
-				+ "precocus <= precofab And precocus <=prccumed And precocus <=prccucon And precocus <=pccumeco Then precocus "
-				+ "When precofab > 0.00 and precofab <= precocus And precofab <=prccumed And precofab <=prccucon And precofab <=pccumeco Then precofab "
-				+ "When prccumed > 0.00 and prccumed <= precocus And prccumed<=precofab And prccumed <=prccucon And prccumed <=pccumeco Then prccumed "
-				+ "When prccucon > 0.00 and prccucon <= precocus And prccucon<=precofab And prccucon <=prccumed And prccucon <=pccumeco Then prccucon "
-				+ "when pccumeco > 0.00 then pccumeco "
-				+ "else case when precocus >0.00 then precocus when precofab>0.00 then precofab when prccumed>0.00 then prccumed "
-				+ "when prccucon>0.00 then prccucon else pccumeco End End)";
-		cn.executeAtualizacao(sql);
-		cn.desconecta();
-
-	}
+    }
+	
 
 	public void CorrigeEstoque() {
 		chamaConexao();
@@ -226,8 +248,6 @@ public class Main extends JFrame {
 		try {
 			while (cn.rs.next()) {
 				// Valor em BigDecimal
-				// txtResultado.setText(cn.rs.getString("Total_Estoque"));
-				// Usar isto nas outras variaveis em double
 				vlrBD = cn.rs.getBigDecimal("Total_Estoque");
 				txtResultado.setText(vlrBD.setScale(2, RoundingMode.HALF_EVEN).toString());
 			}
