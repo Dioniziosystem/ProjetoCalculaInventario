@@ -7,8 +7,7 @@ public class TableProdutos extends AbstractTableModel {
 	private static final long serialVersionUID = 7198190037731535460L;
 	private List<Produtos> p = new ArrayList<>();
 	private List<String> tbId = new ArrayList<>();
-	private String colunas[] = { "Codigo", "Nome", "Quantidade", "Zerar" };
-
+	private String colunas[] = { "Codigo", "Nome", "Quantidade", "Preco Custo", "Zerar" };
 
 	@Override
 	public String getColumnName(int coluna) {
@@ -27,12 +26,12 @@ public class TableProdutos extends AbstractTableModel {
 
 	@Override
 	public void setValueAt(Object avalue, int linha, int coluna) {
-		if (coluna == 3 && p.get(linha).isSelecionado() == false) {
+		if (coluna == 4 && p.get(linha).isSelecionado() == false) {
 			p.get(linha).setSelecionado(true);
 			tbId.add(p.get(linha).getMfcodigo());
 			this.fireTableDataChanged();
 
-		} else if (coluna == 3 && p.get(linha).isSelecionado() == true) {
+		} else if (coluna == 4 && p.get(linha).isSelecionado() == true) {
 			p.get(linha).setSelecionado(false);
 			for (int i = 0; i <= (tbId.size() - 1); i++) {
 				if (tbId.get(i).equals(p.get(linha).getMfcodigo()))
@@ -55,18 +54,18 @@ public class TableProdutos extends AbstractTableModel {
 
 		case 2:
 			return p.get(linha).getQtdestoq();
-
 		case 3:
+			return p.get(linha).getPrecocus();
+		case 4:
 			return p.get(linha).isSelecionado();
 		}
 		return null;
 
 	}
 
-	
 	@Override
 	public Class<?> getColumnClass(int coluna) {
-		if (coluna == 3) {
+		if (coluna == 4) {
 			return Boolean.class;
 		}
 
@@ -75,7 +74,7 @@ public class TableProdutos extends AbstractTableModel {
 	}
 
 	public boolean isCellEditable(int linha, int coluna) {
-		if (coluna == 3) {
+		if (coluna == 4) {
 			return true;
 
 		}

@@ -33,29 +33,37 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableCellRenderer;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceRoyale;
 import javax.swing.JCheckBox;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * public void CorrigePrecoCusto() { chamaConexao(); cn.conecta(url, driver,
+ * user, password); sql = "update materpdv set precocus=(Case When precocus>0.00
+ * And " + "precocus <= precofab And precocus <=prccumed And precocus <=prccucon
+ * And precocus <=pccumeco Then precocus " + "When precofab > 0.00 and precofab
+ * <= precocus And precofab <=prccumed And precofab <=prccucon And precofab
+ * <=pccumeco Then precofab " + "When prccumed > 0.00 and prccumed <= precocus
+ * And prccumed<=precofab And prccumed <=prccucon And prccumed <=pccumeco Then
+ * prccumed " + "When prccucon > 0.00 and prccucon <= precocus And
+ * prccucon<=precofab And prccucon <=prccumed And prccucon <=pccumeco Then
+ * prccucon " + "when pccumeco > 0.00 then pccumeco " + "else case when precocus
+ * >0.00 then precocus when precofab>0.00 then precofab when prccumed>0.00 then
+ * prccumed " + "when prccucon>0.00 then prccucon else pccumeco End End)";
+ * cn.executeAtualizacao(sql); cn.desconecta();
+ * 
+ * }
+ **/
 
-/**public void CorrigePrecoCusto() {
-chamaConexao();
-cn.conecta(url, driver, user, password);
-sql = "update materpdv set precocus=(Case When precocus>0.00 And "
-		+ "precocus <= precofab And precocus <=prccumed And precocus <=prccucon And precocus <=pccumeco Then precocus "
-		+ "When precofab > 0.00 and precofab <= precocus And precofab <=prccumed And precofab <=prccucon And precofab <=pccumeco Then precofab "
-		+ "When prccumed > 0.00 and prccumed <= precocus And prccumed<=precofab And prccumed <=prccucon And prccumed <=pccumeco Then prccumed "
-		+ "When prccucon > 0.00 and prccucon <= precocus And prccucon<=precofab And prccucon <=prccumed And prccucon <=pccumeco Then prccucon "
-		+ "when pccumeco > 0.00 then pccumeco "
-		+ "else case when precocus >0.00 then precocus when precofab>0.00 then precofab when prccumed>0.00 then prccumed "
-		+ "when prccucon>0.00 then prccucon else pccumeco End End)";
-cn.executeAtualizacao(sql);
-cn.desconecta();
-
-}**/
-
+/**
+ * sql = "update materpdv set qtdestoq=((round((qtdestoq*" +
+ * Double.parseDouble(txtProcInv.getText()) + ")/" + txtResultado.getText() +
+ * ",2))) where qtdestoq>0.00 and precocus>0.00 and pesavel=" + "'S'";
+ * cn.executeAtualizacao(sql);
+ **/
 
 public class Main extends JFrame {
 
@@ -70,9 +78,11 @@ public class Main extends JFrame {
 	private JTable tbResultado;
 	private JTextField txtZerar, txtEstMax, txtResultado;
 	private JCheckBox chckbxMarcarTodos;
-	private double vlr, vlr2, vlrFinal;
+	private double vlr, vlr2, vlrFinal, totalItem;
 	private int contador = 0;
 	private BigDecimal vlrBD;
+
+	DefaultTableCellRenderer centro = new DefaultTableCellRenderer();
 
 	ArrayList<String> resultInventario = new ArrayList<String>();
 
@@ -90,8 +100,11 @@ public class Main extends JFrame {
 
 	public void ExibirTodos() {
 		cn.conecta(url, driver, user, password);
-		sql = "Select mfcodigo,nome,qtdestoq from materpdv where qtdestoq>0.00 order by nome";
+		sql = "Select mfcodigo,nome,qtdestoq,precocus from materpdv where qtdestoq>0.00 order by nome";
 		cn.executaConsulta(sql);
+
+		centro.setHorizontalAlignment(SwingConstants.CENTER);
+		tbResultado.getColumnModel().getColumn(0).setCellRenderer(centro);
 
 		while (lista.getRowCount() > 0) {
 			lista.cleanRow(0);
@@ -106,6 +119,7 @@ public class Main extends JFrame {
 				p.setMfcodigo(cn.rs.getString("mfcodigo"));
 				p.setNome(cn.rs.getString("nome"));
 				p.setQtdestoq(cn.rs.getString("qtdestoq"));
+				p.setPrecocus(cn.rs.getString("precocus"));
 				lista.addRow(p);
 			}
 		} catch (SQLException ex) {
@@ -122,7 +136,7 @@ public class Main extends JFrame {
 
 			cn.conecta(url, driver, user, password);
 
-			sql = "Select mfcodigo,nome,qtdestoq from materpdv where upper (nome) " + "like '%"
+			sql = "Select mfcodigo,nome,qtdestoq,precocus from materpdv where upper (nome) " + "like '%"
 					+ txtZerar.getText().toUpperCase() + "%'" + " and qtdestoq>0.00 order by nome";
 
 			cn.executaConsulta(sql);
@@ -138,6 +152,7 @@ public class Main extends JFrame {
 					p.setMfcodigo(cn.rs.getString("mfcodigo"));
 					p.setNome(cn.rs.getString("nome"));
 					p.setQtdestoq(cn.rs.getString("qtdestoq"));
+					p.setPrecocus(cn.rs.getString("precocus"));
 					lista.addRow(p);
 
 				}
@@ -164,18 +179,18 @@ public class Main extends JFrame {
 
 		for (int i = 0; i < lista.getRowCount(); i++) {
 			do {
-				if (String.valueOf(lista.getValueAt(i, 3)) == "true") {
+				if (String.valueOf(lista.getValueAt(i, 4)) == "true") {
 
 					sql = "update materpdv set qtdestoq=0.00 where mfcodigo=" + "'" + lista.getValueAt(i, 0) + "'";
 					cn.executeAtualizacao(sql);
 					// Criar uma lista para armazenar estes codigos
-					codZerar +="'"+ lista.getValueAt(i, 0)+"'" + ",";
+					codZerar += "'" + lista.getValueAt(i, 0) + "'" + ",";
 					lista.cleanRow(i);
 
 				}
-			} while (String.valueOf(lista.getValueAt(i, 3)) == "true");
+			} while (String.valueOf(lista.getValueAt(i, 4)) == "true");
 		}
-		
+
 		cn.desconecta();
 
 	}
@@ -187,43 +202,41 @@ public class Main extends JFrame {
 			for (int i = 0; i < lista.getRowCount(); i++) {
 				do {
 
-					lista.setValueAt(true, i, 3);
+					lista.setValueAt(true, i, 4);
 
-				} while (String.valueOf(lista.getValueAt(i, 3)) == "false");
+				} while (String.valueOf(lista.getValueAt(i, 4)) == "false");
 			}
 		} else {
 
 			for (int i = 0; i < lista.getRowCount(); i++) {
 				do {
 
-					lista.setValueAt(false, i, 3);
+					lista.setValueAt(false, i, 4);
 
-				} while (String.valueOf(lista.getValueAt(i, 3)) == "true");
+				} while (String.valueOf(lista.getValueAt(i, 4)) == "true");
 			}
 
 		}
 
 	}
-	
-	 
-    public void CorrigePrecoCusto() {
-        chamaConexao();
-        cn.conecta(url, driver, user, password);
-        sql = "update materpdv set precocus=(Case When precocus>0.00 And "
-                + "precocus <= precofab And precocus <=prccumed And precocus <=prccucon And precocus <=pccumeco And precocus<=precoven Then precocus "
-                + "When precofab > 0.00 and precofab <= precocus And precofab <=prccumed And precofab <=prccucon And precofab <=pccumeco And precofab <=precoven Then precofab "
-                + "When prccumed > 0.00 and prccumed <= precocus And prccumed <=precofab And prccumed <=prccucon And prccumed <=pccumeco And prccumed <=precoven Then prccumed "
-                + "When prccucon > 0.00 and prccucon <= precocus And prccucon <=precofab And prccucon <=prccumed And prccucon <=pccumeco And prccucon <=precoven Then prccucon "
-                + "when pccumeco > 0.00 and pccumeco <= precocus And pccumeco <=precofab And pccumeco <=prccumed And pccumeco <=prccucon And pccumeco <=precoven Then pccumeco "
-                + "when precoven > 0.00 and precoven <= precocus And precoven <=precofab And precoven <=prccumed And precoven <=prccucon And precoven <=pccumeco Then precoven "
-                + "else case when precocus >0.00 then precocus when precofab>0.00 then precofab when prccumed>0.00 then prccumed "
-                + "when prccucon>0.00 then prccucon when pccumeco>0.00 then pccumeco else precoven End End) where PRECOCUS<>0.00 OR PRECOFAB<>0.00 OR PRCCUMED<>0.00 AND "
-                + "PRCCUCON<>0.00 OR PCCUMECO<>0.00";
-        cn.executeAtualizacao(sql);
-        cn.desconecta();
 
-    }
-	
+	public void CorrigePrecoCusto() {
+		chamaConexao();
+		cn.conecta(url, driver, user, password);
+		sql = "update materpdv set precocus=(Case When precocus>0.00 And "
+				+ "precocus <= precofab And precocus <=prccumed And precocus <=prccucon And precocus <=pccumeco And precocus<=precoven Then precocus "
+				+ "When precofab > 0.00 and precofab <= precocus And precofab <=prccumed And precofab <=prccucon And precofab <=pccumeco And precofab <=precoven Then precofab "
+				+ "When prccumed > 0.00 and prccumed <= precocus And prccumed <=precofab And prccumed <=prccucon And prccumed <=pccumeco And prccumed <=precoven Then prccumed "
+				+ "When prccucon > 0.00 and prccucon <= precocus And prccucon <=precofab And prccucon <=prccumed And prccucon <=pccumeco And prccucon <=precoven Then prccucon "
+				+ "when pccumeco > 0.00 and pccumeco <= precocus And pccumeco <=precofab And pccumeco <=prccumed And pccumeco <=prccucon And pccumeco <=precoven Then pccumeco "
+				+ "when precoven > 0.00 and precoven <= precocus And precoven <=precofab And precoven <=prccumed And precoven <=prccucon And precoven <=pccumeco Then precoven "
+				+ "else case when precocus >0.00 then precocus when precofab>0.00 then precofab when prccumed>0.00 then prccumed "
+				+ "when prccucon>0.00 then prccucon when pccumeco>0.00 then pccumeco else precoven End End) where PRECOCUS<>0.00 OR PRECOFAB<>0.00 OR PRCCUMED<>0.00 OR "
+				+ "PRCCUCON<>0.00 OR PCCUMECO<>0.00";
+		cn.executeAtualizacao(sql);
+		cn.desconecta();
+
+	}
 
 	public void CorrigeEstoque() {
 		chamaConexao();
@@ -273,9 +286,11 @@ public class Main extends JFrame {
 	public void CorrigeDiferenca(double v) {
 		sql = "select mfcodigo,(precocus*qtdestoq) as total_item from materpdv where qtdestoq>0.00 order by total_item desc";
 		cn.executaConsulta(sql);
+
 		try {
 			while (cn.rs.next()) {
 				verCodigo = cn.rs.getString("mfcodigo");
+				totalItem = Double.parseDouble(cn.rs.getString("total_item"));
 				break;
 
 			}
@@ -286,14 +301,28 @@ public class Main extends JFrame {
 
 		if (v < 0.00) {
 			v = Math.abs(v);
+
 		} else {
-			v *= -1;
+			if (v > totalItem) {
+
+				JOptionPane.showMessageDialog(null,
+						"Nao será possivel corrigir até o final.\nO valor "
+								+ BigDecimal.valueOf(v).setScale(2, RoundingMode.HALF_EVEN)
+								+ " terá que será retirado manualmente.");
+				return;
+
+			} else {
+				v *= -1;
+			}
+
 		}
-		sql = "update materpdv set precocus=(select(((precocus*qtdestoq)+" + v
-				+ ")/qtdestoq) from materpdv where mfcodigo=" + "'" + verCodigo + "'" + ") where mfcodigo=" + "'"
+
+		sql = "update materpdv set precocus=(select(((precocus*qtdestoq) + " + v
+				+ " )/qtdestoq) from materpdv where mfcodigo= " + "'" + verCodigo + "'" + ") where mfcodigo=" + "'"
 				+ verCodigo + "'";
 		cn.executeAtualizacao(sql);
 		verCodigo = "";
+
 	}
 
 	public void ProcessarInventario() {
@@ -303,12 +332,6 @@ public class Main extends JFrame {
 			chamaConexao();
 			cn.conecta(url, driver, user, password);
 
-			/**
-			 * sql = "update materpdv set qtdestoq=((round((qtdestoq*" +
-			 * Double.parseDouble(txtProcInv.getText()) + ")/" +
-			 * txtResultado.getText() + ",2))) where qtdestoq>0.00 and
-			 * precocus>0.00 and pesavel=" + "'S'"; cn.executeAtualizacao(sql);
-			 **/
 			sql = "update materpdv set qtdestoq=((round((qtdestoq*" + Double.parseDouble(txtProcInv.getText()) + ")/"
 					+ txtResultado.getText() + ",0))) where qtdestoq>0.00 and precocus>0.00";
 			cn.executeAtualizacao(sql);
@@ -339,6 +362,13 @@ public class Main extends JFrame {
 			cn.desconecta();
 
 		} while (contador == 0);
+
+		try {
+			ExportarSQL();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void ExportarSQL() throws IOException {
@@ -352,7 +382,7 @@ public class Main extends JFrame {
 			PrintWriter gravarList = new PrintWriter(listSql);
 			gravarList.println("update materpdv set qtdestoq=0.00 where mfcodigo in (" + codZerar + ")");
 			listSql.close();
-			JOptionPane.showMessageDialog(null, "Terminado!");
+			JOptionPane.showMessageDialog(null, "Salvo na pasta DBCOMUM");
 		}
 	}
 
@@ -522,105 +552,73 @@ public class Main extends JFrame {
 		});
 
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
-		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+		gl_contentPane.setHorizontalGroup(gl_contentPane.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPane
+				.createSequentialGroup()
+				.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPane.createSequentialGroup().addContainerGap()
+								.addComponent(btnTestConnection))
+						.addGroup(gl_contentPane.createSequentialGroup().addGap(18).addGroup(gl_contentPane
+								.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblValorMaximo)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(txtEstMax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+												GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnAplicar)
+										.addPreferredGap(ComponentPlacement.RELATED).addComponent(chckbxMarcarTodos))
+								.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblItensAZerar)
+										.addPreferredGap(ComponentPlacement.UNRELATED)
+										.addComponent(txtZerar, 476, 476, 476)
+										.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnZerar))))
+						.addGroup(gl_contentPane.createSequentialGroup().addContainerGap()
+								.addComponent(lblValorDoInventario).addGap(4)
+								.addComponent(txtProcInv, GroupLayout.PREFERRED_SIZE, 236, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnProcessar))
+						.addGroup(gl_contentPane.createSequentialGroup().addContainerGap().addComponent(btnExportarSql))
+						.addGroup(gl_contentPane.createSequentialGroup().addContainerGap().addComponent(scrollPane,
+								GroupLayout.DEFAULT_SIZE, 677, Short.MAX_VALUE))
+						.addGroup(gl_contentPane.createSequentialGroup().addContainerGap().addGroup(gl_contentPane
+								.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPane.createSequentialGroup().addComponent(btnCorrigeEstoque)
+										.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnAjPrecoCusto))
+								.addGroup(gl_contentPane.createSequentialGroup().addComponent(btnTotalEmEstoque)
+										.addPreferredGap(ComponentPlacement.UNRELATED).addComponent(lblRs)
+										.addPreferredGap(ComponentPlacement.RELATED).addComponent(txtResultado,
+												GroupLayout.PREFERRED_SIZE, 233, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_contentPane.createSequentialGroup().addComponent(btnOpenDB).addGap(18)
+										.addComponent(txtSearch, GroupLayout.PREFERRED_SIZE, 455,
+												GroupLayout.PREFERRED_SIZE)))))
+				.addGap(16)));
+		gl_contentPane.setVerticalGroup(gl_contentPane.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPane
+				.createSequentialGroup().addContainerGap()
+				.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE).addComponent(btnOpenDB).addComponent(
+						txtSearch, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnTestConnection)
+				.addPreferredGap(ComponentPlacement.UNRELATED)
+				.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING).addComponent(btnTotalEmEstoque)
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(btnTestConnection))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addGap(18)
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(lblValorMaximo)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(txtEstMax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnAplicar)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(chckbxMarcarTodos))
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(lblItensAZerar)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(txtZerar, 476, 476, 476)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnZerar))))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(lblValorDoInventario)
-							.addGap(4)
-							.addComponent(txtProcInv, GroupLayout.PREFERRED_SIZE, 236, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnProcessar))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(btnExportarSql))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 677, Short.MAX_VALUE))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(btnCorrigeEstoque)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnAjPrecoCusto))
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(btnTotalEmEstoque)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(lblRs)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(txtResultado, GroupLayout.PREFERRED_SIZE, 233, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(btnOpenDB)
-									.addGap(18)
-									.addComponent(txtSearch, GroupLayout.PREFERRED_SIZE, 455, GroupLayout.PREFERRED_SIZE)))))
-					.addGap(16))
-		);
-		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnOpenDB)
-						.addComponent(txtSearch, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnTestConnection)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-						.addComponent(btnTotalEmEstoque)
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblRs)
-								.addComponent(txtResultado, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addGap(2)))
-					.addGap(27)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnCorrigeEstoque)
+								.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE).addComponent(lblRs)
+										.addComponent(txtResultado, GroupLayout.PREFERRED_SIZE,
+												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addGap(2)))
+				.addGap(27)
+				.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE).addComponent(btnCorrigeEstoque)
 						.addComponent(btnAjPrecoCusto))
-					.addGap(27)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnZerar)
-						.addComponent(txtZerar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addGap(27)
+				.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE).addComponent(btnZerar)
+						.addComponent(txtZerar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+								GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblItensAZerar))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(txtEstMax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblValorMaximo)
-						.addComponent(btnAplicar)
-						.addComponent(chckbxMarcarTodos))
-					.addGap(22)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
-					.addGap(19)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblValorDoInventario)
-						.addComponent(txtProcInv, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txtEstMax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+								GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblValorMaximo).addComponent(btnAplicar).addComponent(chckbxMarcarTodos))
+				.addGap(22).addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE).addGap(19)
+				.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE).addComponent(lblValorDoInventario)
+						.addComponent(txtProcInv, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+								GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnProcessar))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnExportarSql)
-					.addGap(24))
-		);
+				.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnExportarSql).addGap(24)));
 
 		tbResultado.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		contentPane.setLayout(gl_contentPane);
