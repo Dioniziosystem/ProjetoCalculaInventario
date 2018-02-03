@@ -15,7 +15,7 @@ public class Conexao {
 		try {
 			Class.forName(driver);
 			conexao = DriverManager.getConnection(url, user, password);
-			//JOptionPane.showMessageDialog(null, "Successful Connection!");
+			// JOptionPane.showMessageDialog(null, "Successful Connection!");
 
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block

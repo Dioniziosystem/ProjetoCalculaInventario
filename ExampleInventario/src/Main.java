@@ -58,6 +58,7 @@ import java.awt.event.MouseEvent;
  * }
  **/
 
+
 /**
  * sql = "update materpdv set qtdestoq=((round((qtdestoq*" +
  * Double.parseDouble(txtProcInv.getText()) + ")/" + txtResultado.getText() +
