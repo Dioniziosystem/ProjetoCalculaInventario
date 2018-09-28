@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="/home/emerson/Desktop/Themes of study now/Estudo java eclipse/Files Firebird/Jaybird-3.0.1-JDK_1.8/jaybird-full-3.0.1.jar"/>
-	<classpathentry kind="lib" path="/home/emerson/Desktop/Themes of study now/Versions code/Aparencia-LookAndFeel/looksdemo-2.3.1.jar"/>
+	<classpathentry kind="lib" path="/home/emerson/eclipse-jee-neon-3-linux/workspace/gitHub/ExampleInventario/lib/looksdemo-2.3.1.jar"/>
+	<classpathentry kind="lib" path="/home/emerson/eclipse-jee-neon-3-linux/workspace/gitHub/ExampleInventario/lib/jaybird-full-3.0.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

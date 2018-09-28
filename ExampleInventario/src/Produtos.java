@@ -2,15 +2,26 @@
 public class Produtos {
 	private String mfcodigo = "";
 	private String nome = "";
-	private String qtdestoq = "";
-	private String precocus = "";
+	private double qtdestoq =0.00;
+	private double precocus =0.00;
+	private double resultado=0.00;
 	private boolean selecionado = false;
 
-	public String getPrecocus() {
+
+
+	public double getResultado() {
+		return resultado;
+	}
+
+	public void setResultado(double resultado) {
+		this.resultado = resultado;
+	}
+
+	public double getPrecocus() {
 		return precocus;
 	}
 
-	public void setPrecocus(String precocus) {
+	public void setPrecocus(double precocus) {
 		this.precocus = precocus;
 	}
 
@@ -30,11 +41,11 @@ public class Produtos {
 		this.nome = nome;
 	}
 
-	public String getQtdestoq() {
+	public double getQtdestoq() {
 		return qtdestoq;
 	}
 
-	public void setQtdestoq(String qtdestoq) {
+	public void setQtdestoq(double qtdestoq) {
 		this.qtdestoq = qtdestoq;
 	}
 
