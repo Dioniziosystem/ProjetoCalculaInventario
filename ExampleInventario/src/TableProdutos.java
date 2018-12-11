@@ -8,6 +8,7 @@ public class TableProdutos extends AbstractTableModel {
 	private List<Produtos> p = new ArrayList<>();
 	private List<String> tbId = new ArrayList<>();
 	private String colunas[] = { "Codigo", "Nome", "Quantidade", "Preco Custo", "Valor Total", "Zerar" };
+	private double somaDifVar=0.00,somaDifFinal=0.00;
 
 	@Override
 	public String getColumnName(int coluna) {
@@ -29,6 +30,8 @@ public class TableProdutos extends AbstractTableModel {
 		if (coluna == 5 && p.get(linha).isSelecionado() == false) {
 			p.get(linha).setSelecionado(true);
 			tbId.add(p.get(linha).getMfcodigo());
+			somaDifVar+=p.get(linha).getResultado();
+			setSomaDifFinal(somaDifVar);
 			this.fireTableDataChanged();
 
 		} else if (coluna == 5 && p.get(linha).isSelecionado() == true) {
@@ -37,8 +40,11 @@ public class TableProdutos extends AbstractTableModel {
 				if (tbId.get(i).equals(p.get(linha).getMfcodigo()))
 					tbId.remove(i);
 			}
+			somaDifVar-=p.get(linha).getResultado();
+			setSomaDifFinal(somaDifVar);
 			this.fireTableDataChanged();
 		}
+		
 
 	}
 
@@ -83,18 +89,6 @@ public class TableProdutos extends AbstractTableModel {
 		
 		return String.class;
 
-		/**
-		 * return String.class
-		 * 
-		 * if (coluna == 5) { return Boolean.class; }
-		 * 
-		 * else if(coluna == 4){
-		 * 
-		 * return Double.class; }
-		 * 
-		 * return String.class;
-		 **/
-
 	}
 
 	public boolean isCellEditable(int linha, int coluna) {
@@ -116,5 +110,20 @@ public class TableProdutos extends AbstractTableModel {
 		this.fireTableDataChanged();
 
 	}
+
+	public double getSomaDifFinal() {
+		return somaDifFinal;
+	}
+
+	public void setSomaDifFinal(double somaDifFinal) {
+		this.somaDifFinal = somaDifFinal;
+	}
+
+	public void setSomaDifVar(double somaDifVar) {
+		this.somaDifVar = somaDifVar;
+	}
+	
+	
+	
 
 }
