@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
+
 public class TableProdutos extends AbstractTableModel {
 
 	private static final long serialVersionUID = 7198190037731535460L;
