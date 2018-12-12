@@ -43,7 +43,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JProgressBar;
 
-/**
+
+
+/** Corrigir preço de custo
  * sql = "update materpdv set qtdestoq=((round((qtdestoq*" +
  * Double.parseDouble(txtProcInv.getText()) + ")/" + txtResultado.getText() +
  * ",2))) where qtdestoq>0.00 and precocus>0.00 and pesavel=" + "'S'";

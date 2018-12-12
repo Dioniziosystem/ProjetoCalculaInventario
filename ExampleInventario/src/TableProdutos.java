@@ -25,6 +25,8 @@ public class TableProdutos extends AbstractTableModel {
 		return colunas.length;
 	}
 
+	
+	//Verificaçao de checkbox marcado jtable
 	@Override
 	public void setValueAt(Object avalue, int linha, int coluna) {
 		if (coluna == 5 && p.get(linha).isSelecionado() == false) {
