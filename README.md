@@ -1,3 +1,3 @@
-# ProjetoCalculaInventario
+# Projeto Calcula Inventario
 Este projeto visa realizar um cálculo do valor de inventário (Quantidade * preço de custo) de forma automática, feito para conectar em um banco de dados firebird de um sistema específico. 
 Este procedimento era feito editando quantidade de produtos manualmente na tabela de produtos, demorando até horas para chegar ao valor pedido pelo cliente. Como a quantidade editada não precisava estar correta com o estoque real, o programa consegue chegar na maioria das vezes ao valor correto em questão de minutos, diminuindo muito a carga de trabalho que era repetitivo e cansativo.
